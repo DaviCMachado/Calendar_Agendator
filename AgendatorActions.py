@@ -134,7 +134,7 @@ def get_events_from_email(email_data):
     headers = {"Content-Type": "application/json"}
 
     # --- MELHORIA: Lógica de retentativa ---
-    max_retries = 3
+    max_retries = 2
     for attempt in range(max_retries):
         try:
             logging.info(f"Enviando e-mail (Assunto: '{email_data.get('subject', '')}') para a API Gemini. Tentativa {attempt + 1}/{max_retries}")
