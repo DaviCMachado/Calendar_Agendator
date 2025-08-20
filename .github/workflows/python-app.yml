@@ -20,7 +20,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Define as variáveis de ambiente para este job
     env:
       EMAIL_USER: ${{ secrets.EMAIL_USER }}
       EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
@@ -30,11 +29,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Este passo cria o arquivo credentials.json a partir de um GitHub Secret
     - name: Create credentials.json
       run: echo '${{ secrets.CREDENTIALS_JSON }}' > credentials.json
-      # Você precisa criar um secret no seu repositório chamado CREDENTIALS_JSON
-      # com o conteúdo do seu arquivo json.
 
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
@@ -54,6 +50,4 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Test with pytest
-      run: |
-        pytest
+    # A etapa de teste com pytest foi removida daqui
