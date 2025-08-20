@@ -58,5 +58,14 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Run main script
-      run: python Agendator.py
+      run: python AgendatorActions.py
+
+
+
+
+
+
+
+
+
 
