@@ -38,7 +38,7 @@ GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.
 # --- CORREÇÃO APLICADA AQUI ---
 # As chaves literais {} no exemplo de JSON foram duplicadas para {{}} para escapar delas no método .format()
 GEMINI_PROMPT_TEMPLATE = (
-    "Abaixo está o conteúdo de um e-mail. Verifique se há possíveis reuniões, eventos, tarefas, entregas ou trabalhos que possam ser agendados. "
+    "Abaixo está o conteúdo de um e-mail. Verifique se há possíveis reuniões, eventos, tarefas, entregas ou trabalhos que possam ser agendados. Somente considere se houver um horário e/ou dia especificado."
     "Se houver, responda SOMENTE com um objeto JSON contendo uma lista de eventos. Cada evento deve ter 'start_datetime' (formato 'YYYY-MM-DDTHH:MM:SS-03:00') e 'summary' (descrição). "
     "Se não houver eventos, responda com um JSON com uma lista vazia: {{\"eventos\": []}}. "
     "Considere a data de hoje como: " + datetime.now().strftime('%Y-%m-%d') + ". Segue o e-mail:\n\n"
