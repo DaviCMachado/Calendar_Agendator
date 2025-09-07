@@ -8,9 +8,14 @@ import json
 import logging
 from datetime import datetime, timedelta 
 from dotenv import load_dotenv
+
+#Google API
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
+#LangChain
+from langchain_google_genai import GoogleGenerativeAI
+from langchain.prompts import PromptTemplate
 
 # --- Configuração de Logs ---
 logging.basicConfig(
@@ -172,6 +177,33 @@ def get_events_from_email(email_data):
             return []
     return []
 
+# --- Implementação com Langchain ---
+def get_events_from_email_langchain(email_data):
+    hoje = datetime.now().strftime('%Y-%m-%d')
+
+    prompt = PromptTemplate.from_template(
+        "Abaixo está o conteúdo de um e-mail. Verifique se há possíveis reuniões, eventos, tarefas, entregas ou trabalhos que possam ser agendados. Somente considere se houver um horário e/ou dia especificado."
+        "Se houver, responda SOMENTE com um objeto JSON contendo uma lista de eventos. Cada evento deve ter 'start_datetime' (formato 'YYYY-MM-DDTHH:MM:SS-03:00') e 'summary' (descrição). "
+        "Se não houver eventos, responda com um JSON com uma lista vazia: {{\"eventos\": []}}. "
+        "Considere a data de hoje como: " + datetime.now().strftime('%Y-%m-%d') + ". Segue o e-mail:\n\n"
+        "De: {de}\nPara: {para}\nAssunto: {assunto}\n\nConteúdo:\n{conteudo}"
+    )
+
+    llm = GoogleGenerativeAI(model="gemini-2.5-flash", api_key=GEMINI_API_KEY)
+
+    chain = prompt | llm
+
+    raw_response = chain.invoke({"de": email_data.get("from", ""),
+                             "para": email_data.get("to", ""),
+                             "assunto": email_data.get("subject", ""),
+                             "conteudo": email_data.get("body", ""),
+                             "hoje": hoje})
+
+    #Limpando resposta
+    clean_json_str = raw_response.strip().replace('```json', '').replace('```', '')
+    event_data = json.loads(clean_json_str)
+    
+    return event_data.get("eventos", [])
 
 # --- Módulo do Google Calendar ---
 def create_calendar_event(event_info):
@@ -210,7 +242,8 @@ def main():
     emails = fetch_emails()
     if emails:
         for email_data in emails:
-            events = get_events_from_email(email_data)
+            #events = get_events_from_email(email_data)
+            events = get_events_from_email_langchain(email_data)
             if events:
                 for event in events:
                     if 'start_datetime' in event and 'summary' in event:

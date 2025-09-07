@@ -2,3 +2,5 @@ requests
 python-dotenv
 google-api-python-client
 google-auth-oauthlib
+langchain
+langchain-google-genai
